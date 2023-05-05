@@ -1,7 +1,12 @@
+using Newtonsoft.Json;
+using RouteParameterClearingIssueDemo.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton(JsonConvert.DeserializeObject<List<Person>>(File.ReadAllText("./mock.json"))!);
 
 var app = builder.Build();
 
