@@ -1,0 +1,52 @@
+﻿@using System.Dynamic
+@model DataViewerViewModel
+<div class="center">
+    <h1>Parameter Clear Issue Demo</h1>
+    <p>Please excuse the crude and hastily assembled paginator and... well everything else too</p>
+    <p>See the demo below. If you do a search for something, for example just "e", then you will get a paginated list of all results containing "e" and when you switch page, the search is still filtered to "e"</p>
+    <p>The issue arises when you change your search after selecting a page, so, search for "e", select page 8, then search "a". You should be on page 0, but instead you're on page 8 because the page route parameter isn't cleared</p>
+    <p>I could just set the page route parameter to 0 as part of the tag helper (<span style="font-weight: bold;">&lt;form method="GET" asp-controller="Home" asp-action="DataViewer" asp-route-page="0"&gt;</span>) but that's only going to reset that one parameter, and not any others, and I wish to have a full solution which can be extended without having to update each and every single route parameter</p>
+    <p>An ideal solution would be some kind of clear attribute, like this <span style="font-weight: bold;">&lt;form method="GET" asp-controller="Home" asp-action="DataViewer" asp-clear-route&gt;</span> however nothing like this exists, of course</p>
+    
+    <br />
+    <br />
+    
+    <div>
+        @for (int p = 0; p <= Model.Pages; p++)
+        {
+            ExpandoObject routeValues = new();
+            IDictionary<string, object?> routeValuesDictionary = routeValues;
+            routeValuesDictionary.Add("page", p);
+            routeValuesDictionary.Add("search", Model.Search);
+            
+            <a href="@Url.Action("DataViewer", "Home", routeValues)">@p</a>
+        }
+    </div>
+    
+    <br />
+    
+    <form method="GET" asp-controller="Home" asp-action="DataViewer">
+        <input type="text" name="search" value="@Model.Search" />
+        <button type="submit">Search</button>
+    </form>
+    
+    <br />
+    <br />
+    
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+        </tr>
+    
+        @foreach (Person person in Model.People)
+        {
+            <tr>
+                <td>@person.Id</td>
+                <td>@person.FirstName</td>
+                <td>@person.LastName</td>
+            </tr>
+        }
+    </table>
+</div>
